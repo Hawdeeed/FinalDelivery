@@ -25,29 +25,63 @@ class LLMService:
         self.temperature = temperature
         self.max_tokens = max_tokens
 
-    def generate_prompt(self, base_image: str, reference_image: str, system_prompt: str):
-        """
-        base_image and reference_image should be base64 or URL
-        """
-        response = self.client.responses.create(
+    def generate_style_prompt(
+        self,
+        base_image: str,
+        reference_image: str,
+        system_prompt: str = "You are a helpful assistant",
+    ) -> str:
+        response = self.client.chat.completions.create(
             model=self.model,
-            input=[
+            messages=[
                 {"role": "system", "content": system_prompt},
                 {
                     "role": "user",
                     "content": [
-                        {"type": "input_text", "text": "Generate a precise structured image editing prompt."},
-                        {"type": "input_image", "image_url": base_image},
-                        {"type": "input_image", "image_url": reference_image},
+                        {
+                            "type": "text",
+                            "text": (
+                                ""
+                            )
+                        },
+                        {"type": "image_url", "image_url": {"url": base_image}},
+                        {"type": "image_url", "image_url": {"url": reference_image}},
                     ],
                 },
             ],
-            temperature=self.temperature,
-            max_output_tokens=self.max_tokens,
+            temperature=0.4,  # LOWER = more controlled edits
+            max_tokens=500,
         )
 
-        return response.output_text.strip()
+        return response.choices[0].message.content.strip()
 
+    def generate_style_prompt2(
+        self,
+        reference_image: str,
+        system_prompt: str = "You are a helpful assistant",
+    ) -> str:
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": (
+                                ""
+                            )
+                        },
+                        {"type": "image_url", "image_url": {"url": reference_image}},
+                    ],
+                },
+            ],
+            temperature=0.4,  # LOWER = more controlled edits
+            max_tokens=500,
+        )
+
+        return response.choices[0].message.content.strip()
 
 # ==============================
 # FAL IMAGE SERVICE
@@ -85,32 +119,49 @@ def generate_style_image(base_image: str, reference_image: str, flow_type: int, 
     llm = LLMService()
     fal = FalImageService()
 
-    SYSTEM_PROMPT = """
-    You are a professional photography and visual-design analyst.
-    Analyze ONLY the lighting, ambience, and environment — not the product.
-    Output EXACTLY two lines:
+    system_prompt = """
+    You are a professional photography and visual-design analyst.  
+    When the user uploads an image, your job is to carefully analyze only the lighting, ambience, and environment of the image — not the product or subject.
+
+    You must extract the scene’s visual style and convert it into a format that can be used to restyle another image while keeping its subject locked.
+
+    Your output must be exactly two lines in this exact structure:
 
     Keep the watch exactly the same in size, scale, framing, position, orientation, dial, details, and strap — only change the background, lighting, and ambience.
     Replace the background, lighting, and ambience with <DETAILED_STYLE>.
 
-    <DETAILED_STYLE> must include:
-    - Light direction and quality
-    - Color temperature and color cast
-    - Shadow softness and contrast
-    - Reflections and highlights
-    - Depth of field
-    - Environment materials
-    - Mood and atmosphere
+    <DETAILED_STYLE> must describe only:
+    • Direction and quality of light (window, studio, soft, hard, diffused, etc)
+    • Color temperature AND dominant color casts (warm, cool, neutral, red, blue, neon, etc)
+    • Shadow softness and contrast level
+    • Reflections, specular highlights, and glow
+    • Depth of field and background blur
+    • Environment and materials (studio, interior, macro scene, fabric, spheres, glass, smoke, etc)
+    • Overall mood (luxury, calm, cinematic, dramatic, bold, premium, editorial)
 
-    Do not mention product identity or brand.
-    Do not add extra text.
+    You MUST preserve strong visual identity:
+    • If the scene has intense or saturated colors, they MUST be explicitly stated.
+    • If the scene contains textured or physical background elements (fabric, fur, balls, smoke, liquid, etc), they MUST be described.
+    • Never neutralize a bold scene into a generic lifestyle or soft studio look.
+
+    Do NOT mention:
+    • The product
+    • The subject
+    • The watch
+    • Any brand, logo, or object identity
+    • Any colors or materials of the subject
+
+    Write <STYLE> as a single clean, high-impact generative prompt optimized for Nano Banana, Flux, or SDXL.
+    Do not add any extra text, formatting, or explanations — only the two required lines.
     """
 
     if flow_type == 1:
-        prompt = llm.generate_prompt(base_image, reference_image, SYSTEM_PROMPT)
+        prompt = llm.generate_style_prompt2(reference_image, system_prompt)
         fal_response = fal.generate_image(prompt, [base_image], resolution)
     elif flow_type == 2:
-        prompt = llm.generate_prompt(base_image, reference_image, SYSTEM_PROMPT)
+        prompt = (
+                "Keep the watch exactly the same as in reference image 1 — identical size, scale, zoom level, camera distance, framing, position, dial, dial interior, orientation, and strap. Do not zoom in or out. Only change the background, lighting, and ambiance to match reference image 2. Preserve the original composition. The generated image must have the same width and height as reference image 1."
+            )
         fal_response = fal.generate_image(prompt, [base_image, reference_image], resolution)
     else:
         raise ValueError("flow_type must be 1 or 2")
