@@ -42,18 +42,15 @@ if st.button("Generate"):
     st.code(result["prompt"])
 
     # --- Show Image ---
-    try:
-        image_url = result["fal_response"]["images"][0]["url"]
-        st.image(image_url, caption="Generated Image", use_column_width=True)
+    image_url = result["fal_response"]["images"][0]["url"]
+    st.image(image_url, caption="Generated Image", use_column_width=True)
 
         # Download button
-        st.download_button(
-            label="Download Image",
-            data=requests.get(image_url).content,
-            file_name="generated.png",
-            mime="image/png"
-        )
-    except Exception as e:
-        st.error("Failed to get image from FAL response")
-        st.write(e)
-        st.write(result["fal_response"])
+    st.download_button(
+        label="Download Image",
+        data=requests.get(image_url).content,
+        file_name="generated.png",
+        mime="image/png"
+    )
+        
+      
