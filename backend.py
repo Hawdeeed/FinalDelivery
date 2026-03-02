@@ -108,7 +108,6 @@ class FalImageService:
         }
 
         response = requests.post(self.FAL_ENDPOINT, headers=headers, json=payload, timeout=300)
-        response.raise_for_status()
         return response.json()
 
 
