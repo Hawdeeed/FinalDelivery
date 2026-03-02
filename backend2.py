@@ -1,28 +1,29 @@
-import base64
+import os
+from dotenv import load_dotenv
 from fal_client import subscribe
 
-def image_to_data_uri(image_path: str):
-    with open(image_path, "rb") as f:
-        image_bytes = f.read()
-        encoded = base64.b64encode(image_bytes).decode("utf-8")
+# Load .env file
+load_dotenv()
 
-    # Change mime type if needed (jpeg/webp/etc)
-    return f"data:image/png;base64,{encoded}"
+# Get API key from environment
+FAL_KEY = os.getenv("FAL_KEY")
+
+if not FAL_KEY:
+    raise ValueError("FAL_KEY not found in environment variables")
+
+# Set it for fal-client
+os.environ["FAL_KEY"] = FAL_KEY
 
 
-def nano_banana_edit_base64(prompt: str, resolution: str, image_paths: list):
-
-    # Convert all local images to base64 data URIs
-    image_data_uris = [image_to_data_uri(path) for path in image_paths]
+def nano_banana_edit(prompt, resolution, image_urls):
 
     result = subscribe(
         "fal-ai/nano-banana-pro/edit",
         arguments={
             "prompt": prompt,
             "resolution": resolution,
-            "image_urls": image_data_uris,  # <-- Base64 here
+            "image_urls": image_urls,
             "num_images": 1,
-            "output_format": "png",
         },
         with_logs=True
     )
@@ -31,10 +32,13 @@ def nano_banana_edit_base64(prompt: str, resolution: str, image_paths: list):
 
 
 if __name__ == "__main__":
-    response = nano_banana_edit_base64(
-        prompt="Make this person look cinematic with sunset lighting",
+
+    response = nano_banana_edit(
+        prompt="Cinematic sunset lighting",
         resolution="1K",
-        image_paths=["input1.png", "input2.png"]
+        image_urls=[
+            "https://storage.googleapis.com/falserverless/example_inputs/nano-banana-edit-input.png"
+        ]
     )
 
-    print(response["data"]["images"])
+    print(response["data"])
