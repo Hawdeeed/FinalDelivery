@@ -4,7 +4,7 @@ from io import BytesIO
 from PIL import Image
 import requests
 
-from services import generate_style_image  # <-- your previous file
+from backend2 import generate_style_image  # <-- your previous file
 
 
 # ---------- Helper: Convert Uploaded Image to Base64 Data URI ----------
@@ -64,7 +64,7 @@ if generate_button:
         fal_response = result["fal_response"]
 
         try:
-            image_url = fal_response["data"]["images"][0]["url"]
+            image_url = fal_response["images"][0]["url"]
 
             # Fetch image from URL
             response = requests.get(image_url)

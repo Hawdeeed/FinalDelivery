@@ -2,3 +2,4 @@ streamlit
 openai
 requests
 python-dotenv
+fal_client
