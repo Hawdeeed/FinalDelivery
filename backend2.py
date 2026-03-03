@@ -107,8 +107,6 @@ def generate_style_image(base_image: str, reference_image: str, flow_type: int, 
         """
     if flow_type == 1:
         prompt = llm.generate_style_prompt2(reference_image, system_prompt)
-
-        # ✅ FIXED ORDER
         fal_response = nano_banana_edit(prompt, resolution, [base_image])
 
     elif flow_type == 2:
@@ -122,7 +120,18 @@ def generate_style_image(base_image: str, reference_image: str, flow_type: int, 
             resolution,
             [base_image, reference_image],
         )
+    elif flow_type == 3:
+        prompt = (
+                "Keep the watch and wrist exactly the same as in reference image 1 — identical size, scale, zoom level, camera distance, framing, position, dial, dial interior, orientation, wrist, wrist fabric and strap. Do not zoom in or out. Only change the background, lighting, and ambiance to match reference image 2. Preserve the original composition. The generated image must have the same width and height as reference image 1."
+            )
 
+        # ✅ FIXED ORDER
+        fal_response = nano_banana_edit(
+            prompt,
+            resolution,
+            [base_image, reference_image],
+        )
+       
     else:
         raise ValueError("flow_type must be 1 or 2")
 
