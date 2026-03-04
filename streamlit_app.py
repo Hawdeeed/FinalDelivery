@@ -29,7 +29,7 @@ st.write("Upload base image and reference image to generate styled output.")
 base_image_file = st.file_uploader("Upload Base Image", type=["png", "jpg", "jpeg"])
 reference_image_file = st.file_uploader("Upload Reference Image", type=["png", "jpg", "jpeg"])
 
-flow_type = st.radio("Select Flow Type", [1, 2, 3])
+flow_type = st.radio("Select Flow Type", [1, 2, 3, 4])
 
 resolution = st.selectbox(
     "Select Resolution",
