@@ -50,10 +50,7 @@ class LLMService:
         )
 
         return response.choices[0].message.content.strip()
-
-
 def nano_banana_edit(prompt, resolution, image_urls):
-
     result = subscribe(
         "fal-ai/nano-banana-pro/edit",
         arguments={
@@ -66,16 +63,12 @@ def nano_banana_edit(prompt, resolution, image_urls):
     )
 
     return result
-
-
 def generate_style_image(base_image: str, reference_image: str, flow_type: int, resolution: str = "1K"):
     llm = LLMService()
     system_prompt = """
         You are a professional photography and visual-design analyst.  
         When the user uploads an image, your job is to carefully analyze only the lighting, ambience, and environment of the image — not the product or subject.
-
         You must extract the scene’s visual style and convert it into a format that can be used to restyle another image while keeping its subject locked.
-
         Your output must be exactly two lines in this exact structure:
 
         Keep the watch exactly the same in size, scale, framing, position, orientation, dial, details, and strap — only change the background, lighting, and ambience.
@@ -108,7 +101,6 @@ def generate_style_image(base_image: str, reference_image: str, flow_type: int, 
     if flow_type == 1:
         prompt = llm.generate_style_prompt2(reference_image, system_prompt)
         fal_response = nano_banana_edit(prompt, resolution, [base_image])
-
     elif flow_type == 2:
         prompt = (
                 "Keep the watch exactly the same as in reference image 1 — identical size, scale, zoom level, camera distance, framing, position, dial, dial interior, orientation, and strap. Do not zoom in or out. Only change the background, lighting, and ambiance to match reference image 2. Preserve the original composition. The generated image must have the same width and height as reference image 1."
@@ -131,10 +123,8 @@ def generate_style_image(base_image: str, reference_image: str, flow_type: int, 
             resolution,
             [base_image, reference_image],
         )
-       
     else:
         raise ValueError("flow_type must be 1 or 2")
-
     return {
         "prompt": prompt,
         "fal_response": fal_response,
