@@ -126,7 +126,7 @@ def generate_style_image(base_image: str, reference_image: str, flow_type: int, 
         
     elif flow_type == 4:
         prompt = (
-                "Edit image A to have the same background, lighting, wrist fabric and ambiance as reference image B, while keeping the watch and wrist exactly the same as in reference image 1 — identical size, scale, zoom level, camera distance, framing, position, dial, dial interior, orientation, wrist, wrist position and strap. Do not zoom in or out. Preserve the original composition. The generated image must have the same width and height as reference image A."
+                "Edit image A to have the same background, lighting, wrist fabric and ambiance as reference image B, while keeping the watch and wrist exactly the same as in reference image A — identical size, scale, zoom level, camera distance, framing, position, dial, dial interior, orientation, wrist, wrist position and strap. Do not zoom in or out. Preserve the original composition. The generated image must have the same width and height as reference image A."
             )
 
         fal_response = nano_banana_edit(
