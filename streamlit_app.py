@@ -35,12 +35,7 @@ resolution = st.selectbox(
     "Select Resolution",
     ["1K", "2K", "4K"]
 )
-
 generate_button = st.button("Generate Image")
-
-
-# ---------- Generate ----------
-
 if generate_button:
 
     if base_image_file is None or reference_image_file is None:
