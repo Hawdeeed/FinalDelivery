@@ -114,7 +114,7 @@ def generate_style_image(base_image: str, reference_image: str, flow_type: int, 
         )
     elif flow_type == 3:
         prompt = (
-                "Keep the watch and wrist exactly the same as in reference image 1 — identical size, scale, zoom level, camera distance, framing, position, dial, dial interior, orientation, wrist, wrist position and strap. Do not zoom in or out. Only change the background, lighting, wrist fabric and ambiance to match reference image 2. Preserve the original composition. The generated image must have the same width and height as reference image 1."
+            "Extract the style from Image B and put that style on Image A without changing identical size, scale, zoom level, camera distance, framing, position, dial, dial interior, orientation, wrist, wrist position and strap in Image A."
             )
 
         # ✅ FIXED ORDER
