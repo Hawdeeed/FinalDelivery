@@ -114,7 +114,6 @@ def generate_style_image(base_image: str, reference_image: str, flow_type: int, 
         prompt = (
             "Extract the style from Image B and put that style on Image A without changing identical size, scale, zoom level, camera distance, framing, position, dial, dial interior, orientation, wrist, wrist position and strap in Image A."
             )
-        # ✅ FIXED ORDER
         fal_response = nano_banana_edit(
             prompt,
             resolution,
