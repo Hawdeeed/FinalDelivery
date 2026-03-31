@@ -3,10 +3,8 @@ from dotenv import load_dotenv
 from fal_client import subscribe
 from openai import OpenAI
 
-# Load .env file
 load_dotenv()
 
-# Get API key from environment
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 FAL_KEY = os.getenv("FAL_KEY")
 
@@ -45,10 +43,9 @@ class LLMService:
                     ],
                 },
             ],
-            temperature=0.4,  # LOWER = more controlled edits
+            temperature=0.4,  
             max_tokens=500,
         )
-
         return response.choices[0].message.content.strip()
 def nano_banana_edit(prompt, resolution, image_urls):
     result = subscribe(
@@ -61,8 +58,8 @@ def nano_banana_edit(prompt, resolution, image_urls):
         },
         with_logs=True
     )
-
     return result
+
 def generate_style_image(base_image: str, reference_image: str, flow_type: int, resolution: str = "1K"):
     llm = LLMService()
     system_prompt = """
@@ -70,7 +67,6 @@ def generate_style_image(base_image: str, reference_image: str, flow_type: int, 
         When the user uploads an image, your job is to carefully analyze only the lighting, ambience, and environment of the image — not the product or subject.
         You must extract the scene’s visual style and convert it into a format that can be used to restyle another image while keeping its subject locked.
         Your output must be exactly two lines in this exact structure:
-
         Keep the watch exactly the same in size, scale, framing, position, orientation, dial, details, and strap — only change the background, lighting, and ambience.
         Replace the background, lighting, and ambience with <DETAILED_STYLE>.
 
