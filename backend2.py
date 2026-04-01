@@ -8,10 +8,13 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 FAL_KEY = os.getenv("FAL_KEY")
 
+
 if not FAL_KEY:
     raise ValueError("FAL_KEY not found in environment variables")
+
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY not found in environment variables")
+
 
 class LLMService:
     def __init__(self, model="gpt-4o-mini", temperature=0.4, max_tokens=500):
@@ -60,6 +63,8 @@ def nano_banana_edit(prompt, resolution, image_urls):
     )
     return result
 
+
+
 def generate_style_image(base_image: str, reference_image: str, flow_type: int, resolution: str = "1K"):
     llm = LLMService()
     system_prompt = """
@@ -97,6 +102,7 @@ def generate_style_image(base_image: str, reference_image: str, flow_type: int, 
     if flow_type == 1:
         prompt = llm.generate_style_prompt2(reference_image, system_prompt)
         fal_response = nano_banana_edit(prompt, resolution, [base_image])
+        
     elif flow_type == 2:
         prompt = (
                 "Keep the watch exactly the same as in reference image 1 — identical size, scale, zoom level, camera distance, framing, position, dial, dial interior, orientation, and strap. Do not zoom in or out. Only change the background, lighting, and ambiance to match reference image 2. Preserve the original composition. The generated image must have the same width and height as reference image 1."
@@ -106,6 +112,7 @@ def generate_style_image(base_image: str, reference_image: str, flow_type: int, 
             resolution,
             [base_image, reference_image],
         )
+        
     elif flow_type == 3:
         prompt = (
             "Extract the style from Image B and put that style on Image A without changing identical size, scale, zoom level, camera distance, framing, position, dial, dial interior, orientation, wrist, wrist position and strap in Image A."
